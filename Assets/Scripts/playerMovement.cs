@@ -15,6 +15,7 @@ public class playerMovement : MonoBehaviour
     private float maxSpeedL = -10f;
     private bool speedUpR = false;
     private bool speedUpL = false;
+    private bool canDoubleJump = false;
 
     void Awake()
     {
@@ -23,18 +24,27 @@ public class playerMovement : MonoBehaviour
 
     void Update()
     {
-        if (Ground)
+        if (Input.GetKeyDown("up")) 
         {
-            maxSpeedL = -10f;
-            maxSpeedR = 10f;
-            _rigidbody.gravityScale = 1;
-            if (Input.GetKeyDown("up"))
+            if (Ground)
             {
+                maxSpeedL = -10f;
+                maxSpeedR = 10f;
+                _rigidbody.gravityScale = 1;
                 timerCheck = true;
                 _rigidbody.AddForce(transform.up * jumpHeight);
                 Ground = false;
-            }
+                canDoubleJump = true;
+             }
+             else if (canDoubleJump)
+             {
+                canDoubleJump = false;
+                timerCheck = true;
+                Ground = false;
+                _rigidbody.AddForce(transform.up * jumpHeight);
+              }
         }
+        
         if (!Ground)
         {
             maxSpeedL = -6f;
