@@ -39,6 +39,8 @@ public class playerMovement : MonoBehaviour
              else if (canDoubleJump)
              {
                 canDoubleJump = false;
+                timerCheck = false;
+                timer = 0.75f;
                 timerCheck = true;
                 Ground = false;
                 _rigidbody.AddForce(transform.up * jumpHeight);
