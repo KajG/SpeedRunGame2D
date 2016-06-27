@@ -16,7 +16,9 @@ public class playerMovement : MonoBehaviour
     private bool speedUpR = false;
     private bool speedUpL = false;
     private bool hitRechter;
-    private bool wall;
+    private bool hitLinker;
+    private bool wallR;
+    private bool wallL;
     private bool canDoubleJump = false;
     private float hitTimer = 2f;
     public GameObject target;
@@ -57,27 +59,27 @@ public class playerMovement : MonoBehaviour
         {
             hitTimer -= Time.deltaTime;
         }
-        if(hitTimer < 0)
+        if (hitTimer < 0)
         {
             hitRechter = false;
             hitTimer = 2f;
         }
         if (Ground)
-        { 
+        {
             maxSpeedL = -10f;
             maxSpeedR = 10f;
             _rigidbody.gravityScale = 1;
-                if (Input.GetKeyDown("up"))
-                {
-                    timerCheck = true;
-                    _rigidbody.AddForce(transform.up * jumpHeight);
-                    Ground = false;
-                }
+            if (Input.GetKeyDown("up"))
+            {
+                timerCheck = true;
+                _rigidbody.AddForce(transform.up * jumpHeight);
+                Ground = false;
+            }
         }
         if (!Ground)
         {
-            maxSpeedL = -6f;
-            maxSpeedR = 6f;
+            maxSpeedL = -8f;
+            maxSpeedR = 8f;
         }
         Debug.Log(timer);
         if (timerCheck)
@@ -91,14 +93,15 @@ public class playerMovement : MonoBehaviour
             timer = 0.75f;
         }
 
-        Debug.Log(wall + "muur");
-        Debug.Log(speedUpR +"cancer");
+        Debug.Log(wallR + "muur");
+        Debug.Log(wallL + "wow");
+        Debug.Log(speedUpR + "cancer");
 
 
 
         //transform.position += Vector3.right * speedR * Time.deltaTime;
-        transform.position += Vector3.right * speedL * Time.deltaTime;
-        if (!wall)
+        //transform.position += Vector3.right * speedL * Time.deltaTime;
+        if (!wallR)
         {
             transform.position += Vector3.right * speedR * Time.deltaTime;
             if (Input.GetKeyDown("right"))
@@ -112,12 +115,12 @@ public class playerMovement : MonoBehaviour
                 speedUpR = false;
             }
 
-            if (speedUpR == true && speedR < maxSpeedR && !wall)
+            if (speedUpR == true && speedR < maxSpeedR && !wallR)
             {
                 speedR += 0.5f;
             }
 
-            if (speedUpR == false && speedR > 0 && !wall)
+            if (speedUpR == false && speedR > 0 && !wallR)
             {
                 speedR -= 0.5f;
             }
@@ -126,26 +129,34 @@ public class playerMovement : MonoBehaviour
         {
             speedUpR = false;
         }
-
-        if (Input.GetKeyDown("left"))
+        if (!wallL)
         {
-            speedUpL = true;
-            Debug.Log(speedUpL);
+            transform.position += Vector3.right * speedL * Time.deltaTime;
+            if (Input.GetKeyDown("left"))
+            {
+                speedUpL = true;
+                Debug.Log(speedUpL);
+            }
+            else if (Input.GetKeyUp("left"))
+            {
+                speedUpL = false;
+                Debug.Log(speedUpL);
+            }
+            if (speedUpL == true && speedL > maxSpeedL)
+            {
+                speedL -= 0.5f;
+            }
+            if (speedUpL == false && speedL < 0)
+            {
+                speedL += 0.5f;
+            }
         }
-        else if (Input.GetKeyUp("left"))
+        
+        if (Input.GetKeyUp("left"))
         {
             speedUpL = false;
             Debug.Log(speedUpL);
         }
-        if (speedUpL == true && speedL > maxSpeedL)
-        {
-            speedL -= 0.5f;
-        }
-        if (speedUpL == false && speedL < 0)
-        {
-            speedL += 0.5f;
-        }
-
     }
     void OnCollisionEnter2D(Collision2D other)
     {
@@ -156,15 +167,25 @@ public class playerMovement : MonoBehaviour
         if (other.gameObject.CompareTag("RechterMuur"))
         {
             hitRechter = true;
-            transform.parent = target.transform;
-            wall = true;
+            wallR = true;
+            canDoubleJump = true;
+        }
+        if (other.gameObject.CompareTag("LinkerMuur"))
+        {
+            hitLinker = true;
+            wallL = true;
+            canDoubleJump = true;
         }
     }
     void OnCollisionExit2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("RechterMuur"))
         {
-            wall = false;
+            wallR = false;
+        }
+        if (other.gameObject.CompareTag("LinkerMuur"))
+        {
+            wallL = false;
         }
     }
 }
