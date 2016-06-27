@@ -15,6 +15,12 @@ public class playerMovement : MonoBehaviour
     private float maxSpeedL = -10f;
     private bool speedUpR = false;
     private bool speedUpL = false;
+    private bool hitRechter;
+    private bool wall;
+    private bool canDoubleJump = false;
+    private float hitTimer = 2f;
+    public GameObject target;
+
 
     void Awake()
     {
@@ -23,17 +29,49 @@ public class playerMovement : MonoBehaviour
 
     void Update()
     {
-        if (Ground)
+        if (Input.GetKeyDown("up"))
         {
-            maxSpeedL = -10f;
-            maxSpeedR = 10f;
-            _rigidbody.gravityScale = 1;
-            if (Input.GetKeyDown("up"))
+            if (Ground)
             {
+                maxSpeedL = -10f;
+                maxSpeedR = 10f;
+                _rigidbody.gravityScale = 1;
                 timerCheck = true;
                 _rigidbody.AddForce(transform.up * jumpHeight);
                 Ground = false;
+                canDoubleJump = true;
             }
+            else if (canDoubleJump)
+            {
+                canDoubleJump = false;
+                timerCheck = false;
+                timer = 0.75f;
+                timerCheck = true;
+                Ground = false;
+                _rigidbody.AddForce(transform.up * jumpHeight);
+            }
+        }
+        Debug.Log(hitRechter);
+        if (hitRechter)
+        {
+            hitTimer -= Time.deltaTime;
+        }
+        if(hitTimer < 0)
+        {
+            hitRechter = false;
+            hitTimer = 2f;
+        }
+        if (Ground)
+        { 
+            maxSpeedL = -10f;
+            maxSpeedR = 10f;
+            _rigidbody.gravityScale = 1;
+                if (Input.GetKeyDown("up"))
+                {
+                    timerCheck = true;
+                    _rigidbody.AddForce(transform.up * jumpHeight);
+                    Ground = false;
+                }
         }
         if (!Ground)
         {
@@ -52,28 +90,40 @@ public class playerMovement : MonoBehaviour
             timer = 0.75f;
         }
 
+        Debug.Log(wall + "muur");
+        Debug.Log(speedUpR +"cancer");
 
 
 
-        transform.position += Vector3.right * speedR * Time.deltaTime;
+        //transform.position += Vector3.right * speedR * Time.deltaTime;
         transform.position += Vector3.right * speedL * Time.deltaTime;
-        if (Input.GetKeyDown("right"))
+        if (!wall)
         {
-            speedUpR = true;
-            Debug.Log(speedUpR);
+            transform.position += Vector3.right * speedR * Time.deltaTime;
+            if (Input.GetKeyDown("right"))
+            {
+                speedUpR = true;
+                Debug.Log("recht");
+            }
+
+            else if (Input.GetKeyUp("right"))
+            {
+                speedUpR = false;
+            }
+
+            if (speedUpR == true && speedR < maxSpeedR && !wall)
+            {
+                speedR += 0.5f;
+            }
+
+            if (speedUpR == false && speedR > 0 && !wall)
+            {
+                speedR -= 0.5f;
+            }
         }
-        else if (Input.GetKeyUp("right"))
+        if (Input.GetKeyUp("right"))
         {
             speedUpR = false;
-            Debug.Log(speedUpR);
-        }
-        if (speedUpR == true && speedR < maxSpeedR)
-        {
-            speedR += 0.5f;
-        }
-        if (speedUpR == false && speedR > 0)
-        {
-            speedR -= 0.5f;
         }
 
         if (Input.GetKeyDown("left"))
@@ -101,6 +151,19 @@ public class playerMovement : MonoBehaviour
         if (other.gameObject.CompareTag("Ground"))
         {
             Ground = true;
+        }
+        if (other.gameObject.CompareTag("RechterMuur"))
+        {
+            hitRechter = true;
+            transform.parent = target.transform;
+            wall = true;
+        }
+    }
+    void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("RechterMuur"))
+        {
+            wall = false;
         }
     }
 }
