@@ -20,6 +20,7 @@ public class playerMovement : MonoBehaviour
     private bool canDoubleJump = false;
     private float hitTimer = 2f;
     public GameObject target;
+    //fakka
 
 
     void Awake()
