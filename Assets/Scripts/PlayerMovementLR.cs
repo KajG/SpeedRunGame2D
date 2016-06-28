@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovementLR : MonoBehaviour
 {
 	public float speedR = 0f;
 	public float speedL = 0f;
